@@ -19,7 +19,7 @@
 */
 
 import * as Messages from './spicemsg.js';
-import { Constants } from './enums.js';
+import { EnumConstants } from './enums.js';
 import { KeyNames } from './atKeynames.js';
 import { SpiceConn } from './spiceconn.js';
 import { DEBUG } from './utils.js';
@@ -51,26 +51,26 @@ function SpiceInputsConn()
 SpiceInputsConn.prototype = Object.create(SpiceConn.prototype);
 SpiceInputsConn.prototype.process_channel_message = function(msg)
 {
-    if (msg.type == Constants.SPICE_MSG_INPUTS_INIT)
+    if (msg.type == EnumConstants.SPICE_MSG_INPUTS_INIT)
     {
-        var inputs_init = new Messages.SpiceMsgInputsInit(msg.data);
+        var inputs_init = new SpiceMsgInputsInit(msg.data);
         this.keyboard_modifiers = inputs_init.keyboard_modifiers;
         DEBUG > 1 && console.log("MsgInputsInit - modifier " + this.keyboard_modifiers);
         // FIXME - We don't do anything with the keyboard modifiers...
         return true;
     }
-    if (msg.type == Constants.SPICE_MSG_INPUTS_KEY_MODIFIERS)
+    if (msg.type == EnumConstants.SPICE_MSG_INPUTS_KEY_MODIFIERS)
     {
-        var key = new Messages.SpiceMsgInputsKeyModifiers(msg.data);
+        var key = new SpiceMsgInputsKeyModifiers(msg.data);
         this.keyboard_modifiers = key.keyboard_modifiers;
         DEBUG > 1 && console.log("MsgInputsKeyModifiers - modifier " + this.keyboard_modifiers);
         // FIXME - We don't do anything with the keyboard modifiers...
         return true;
     }
-    if (msg.type == Constants.SPICE_MSG_INPUTS_MOUSE_MOTION_ACK)
+    if (msg.type == EnumConstants.SPICE_MSG_INPUTS_MOUSE_MOTION_ACK)
     {
         DEBUG > 1 && console.log("mouse motion ack");
-        this.waiting_for_ack -= Constants.SPICE_INPUT_MOTION_ACK_BUNCH;
+        this.waiting_for_ack -= EnumConstants.SPICE_INPUT_MOTION_ACK_BUNCH;
         return true;
     }
     return false;
@@ -80,21 +80,21 @@ SpiceInputsConn.prototype.process_channel_message = function(msg)
 
 function handle_mousemove(e)
 {
-    var msg = new Messages.SpiceMiniData();
+    var msg = new SpiceMiniData();
     var move;
-    if (this.sc.mouse_mode == Constants.SPICE_MOUSE_MODE_CLIENT)
+    if (this.sc.mouse_mode == EnumConstants.SPICE_MOUSE_MODE_CLIENT)
     {
-        move = new Messages.SpiceMsgcMousePosition(this.sc, e)
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_POSITION, move);
+        move = new SpiceMsgcMousePosition(this.sc, e)
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_POSITION, move);
     }
     else
     {
-        move = new Messages.SpiceMsgcMouseMotion(this.sc, e)
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_MOTION, move);
+        move = new SpiceMsgcMouseMotion(this.sc, e)
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_MOTION, move);
     }
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
     {
-        if (this.sc.inputs.waiting_for_ack < (2 * Constants.SPICE_INPUT_MOTION_ACK_BUNCH))
+        if (this.sc.inputs.waiting_for_ack < (2 * EnumConstants.SPICE_INPUT_MOTION_ACK_BUNCH))
         {
             this.sc.inputs.send_msg(msg);
             this.sc.inputs.waiting_for_ack++;
@@ -117,9 +117,9 @@ function handle_mousemove(e)
 
 function handle_mousedown(e)
 {
-    var press = new Messages.SpiceMsgcMousePress(this.sc, e)
-    var msg = new Messages.SpiceMiniData();
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_PRESS, press);
+    var press = new SpiceMsgcMousePress(this.sc, e)
+    var msg = new SpiceMiniData();
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_PRESS, press);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
@@ -134,9 +134,9 @@ function handle_contextmenu(e)
 
 function handle_mouseup(e)
 {
-    var release = new Messages.SpiceMsgcMouseRelease(this.sc, e)
-    var msg = new Messages.SpiceMiniData();
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_RELEASE, release);
+    var release = new SpiceMsgcMouseRelease(this.sc, e)
+    var msg = new SpiceMiniData();
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_RELEASE, release);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
@@ -145,21 +145,21 @@ function handle_mouseup(e)
 
 function handle_mousewheel(e)
 {
-    var press = new Messages.SpiceMsgcMousePress;
-    var release = new Messages.SpiceMsgcMouseRelease;
+    var press = new SpiceMsgcMousePress;
+    var release = new SpiceMsgcMouseRelease;
     if (e.deltaY < 0)
-        press.button = release.button = Constants.SPICE_MOUSE_BUTTON_UP;
+        press.button = release.button = EnumConstants.SPICE_MOUSE_BUTTON_UP;
     else
-        press.button = release.button = Constants.SPICE_MOUSE_BUTTON_DOWN;
+        press.button = release.button = EnumConstants.SPICE_MOUSE_BUTTON_DOWN;
     press.buttons_state = 0;
     release.buttons_state = 0;
 
-    var msg = new Messages.SpiceMiniData();
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_PRESS, press);
+    var msg = new SpiceMiniData();
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_PRESS, press);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_MOUSE_RELEASE, release);
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_MOUSE_RELEASE, release);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
@@ -168,10 +168,10 @@ function handle_mousewheel(e)
 
 function handle_keydown(e)
 {
-    var key = new Messages.SpiceMsgcKeyDown(e)
-    var msg = new Messages.SpiceMiniData();
+    var key = new SpiceMsgcKeyDown(e)
+    var msg = new SpiceMiniData();
     check_and_update_modifiers(e, key.code, this.sc);
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
@@ -180,10 +180,10 @@ function handle_keydown(e)
 
 function handle_keyup(e)
 {
-    var key = new Messages.SpiceMsgcKeyUp(e)
-    var msg = new Messages.SpiceMiniData();
+    var key = new SpiceMsgcKeyUp(e)
+    var msg = new SpiceMiniData();
     check_and_update_modifiers(e, key.code, this.sc);
-    msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_UP, key);
+    msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_UP, key);
     if (this.sc && this.sc.inputs && this.sc.inputs.state === "ready")
         this.sc.inputs.send_msg(msg);
 
@@ -193,16 +193,16 @@ function handle_keyup(e)
 function sendCtrlAltDel(sc)
 {
     if (sc && sc.inputs && sc.inputs.state === "ready"){
-        var key = new Messages.SpiceMsgcKeyDown();
-        var msg = new Messages.SpiceMiniData();
+        var key = new SpiceMsgcKeyDown();
+        var msg = new SpiceMiniData();
 
         update_modifier(true, KeyNames.KEY_LCtrl, sc);
         update_modifier(true, KeyNames.KEY_Alt, sc);
 
         key.code = KeyNames.KEY_KP_Decimal;
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
         sc.inputs.send_msg(msg);
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_UP, key);
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_UP, key);
         sc.inputs.send_msg(msg);
 
         if(Ctrl_state == false) update_modifier(false, KeyNames.KEY_LCtrl, sc);
@@ -212,18 +212,18 @@ function sendCtrlAltDel(sc)
 
 function update_modifier(state, code, sc)
 {
-    var msg = new Messages.SpiceMiniData();
+    var msg = new SpiceMiniData();
     if (!state)
     {
-        var key = new Messages.SpiceMsgcKeyUp()
+        var key = new SpiceMsgcKeyUp()
         key.code =(0x80|code);
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_UP, key);
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_UP, key);
     }
     else
     {
-        var key = new Messages.SpiceMsgcKeyDown()
+        var key = new SpiceMsgcKeyDown()
         key.code = code;
-        msg.build_msg(Constants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
+        msg.build_msg(EnumConstants.SPICE_MSGC_INPUTS_KEY_DOWN, key);
     }
 
     sc.inputs.send_msg(msg);

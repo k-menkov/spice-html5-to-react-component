@@ -23,7 +23,7 @@
 **  enums.js
 **      'constants' for Spice
 **--------------------------------------------------------------------------*/
-export var Constants = {
+export var EnumConstants = {
   SPICE_MAGIC         : "REDQ",
   SPICE_VERSION_MAJOR : 2,
   SPICE_VERSION_MINOR : 2,

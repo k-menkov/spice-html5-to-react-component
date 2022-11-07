@@ -25,7 +25,7 @@
 **  spice.proto, but it was instead put together by hand.
 **--------------------------------------------------------------------------*/
 
-import { Constants } from './enums.js';
+import { EnumConstants } from './enums.js';
 import { SpiceDataView } from './spicedataview.js';
 import { create_rsa_from_mb } from './ticket.js';
 import {
@@ -46,9 +46,9 @@ import {
 
 function SpiceLinkHeader(a, at)
 {
-    this.magic = Constants.SPICE_MAGIC;
-    this.major_version = Constants.SPICE_VERSION_MAJOR;
-    this.minor_version = Constants.SPICE_VERSION_MINOR;
+    this.magic = EnumConstants.SPICE_MAGIC;
+    this.major_version = EnumConstants.SPICE_VERSION_MAJOR;
+    this.minor_version = EnumConstants.SPICE_VERSION_MINOR;
     this.size = 0;
     if (a !== undefined)
         this.from_buffer(a, at);
@@ -180,7 +180,7 @@ SpiceLinkReply.prototype =
         this.error = dv.getUint32(at, true); at += 4;
 
         this.pub_key = create_rsa_from_mb(a, at);
-        at += Constants.SPICE_TICKET_PUBKEY_BYTES;
+        at += EnumConstants.SPICE_TICKET_PUBKEY_BYTES;
 
         var num_common_caps = dv.getUint32(at, true); at += 4;
         var num_channel_caps  = dv.getUint32(at, true); at += 4;
@@ -215,7 +215,7 @@ SpiceLinkAuthTicket.prototype =
         var i;
         var dv = new SpiceDataView(a);
         dv.setUint32(at, this.auth_mechanism, true); at += 4;
-        for (i = 0; i < Constants.SPICE_TICKET_KEY_PAIR_LENGTH / 8; i++)
+        for (i = 0; i < EnumConstants.SPICE_TICKET_KEY_PAIR_LENGTH / 8; i++)
         {
             if (this.encrypted_data && i < this.encrypted_data.length)
                 dv.setUint8(at, this.encrypted_data[i], true);
@@ -226,7 +226,7 @@ SpiceLinkAuthTicket.prototype =
     },
     buffer_size: function()
     {
-        return 4 + (Constants.SPICE_TICKET_KEY_PAIR_LENGTH / 8);
+        return 4 + (EnumConstants.SPICE_TICKET_KEY_PAIR_LENGTH / 8);
     }
 }
 
@@ -481,7 +481,7 @@ SpiceMsgcMainAgentStart.prototype =
 
 function SpiceMsgcMainAgentData(type, data)
 {
-    this.protocol = Constants.VD_AGENT_PROTOCOL;
+    this.protocol = EnumConstants.VD_AGENT_PROTOCOL;
     this.type = type;
     this.opaque = 0;
     this.size = data.buffer_size();
@@ -1020,8 +1020,8 @@ function SpiceMsgcMousePress(sc, e)
     }
     else
     {
-        this.button = Constants.SPICE_MOUSE_BUTTON_LEFT;
-        this.buttons_state = Constants.SPICE_MOUSE_BUTTON_MASK_LEFT;
+        this.button = EnumConstants.SPICE_MOUSE_BUTTON_LEFT;
+        this.buttons_state = EnumConstants.SPICE_MOUSE_BUTTON_MASK_LEFT;
     }
 }
 
@@ -1051,7 +1051,7 @@ function SpiceMsgcMouseRelease(sc, e)
     }
     else
     {
-        this.button = Constants.SPICE_MOUSE_BUTTON_LEFT;
+        this.button = EnumConstants.SPICE_MOUSE_BUTTON_LEFT;
         this.buttons_state = 0;
     }
 }

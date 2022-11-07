@@ -19,7 +19,7 @@
    along with spice-html5.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Constants } from './enums.js';
+import { EnumConstants } from './enums.js';
 import { DEBUG, arraybuffer_to_str } from './utils.js';
 import { SpiceConn } from './spiceconn.js';
 import { SpiceMsgPortInit } from './spicemsg.js';
@@ -39,7 +39,7 @@ SpicePortConn.prototype = Object.create(SpiceConn.prototype);
 
 SpicePortConn.prototype.process_channel_message = function(msg)
 {
-    if (msg.type == Constants.SPICE_MSG_PORT_INIT)
+    if (msg.type == EnumConstants.SPICE_MSG_PORT_INIT)
     {
         if (this.port_name === null)
         {
@@ -52,7 +52,7 @@ SpicePortConn.prototype.process_channel_message = function(msg)
 
         DEBUG > 0 && console.log('SPICE port: Port', this.port_name, 'is already initialized.');
     }
-    else if (msg.type == Constants.SPICE_MSG_PORT_EVENT)
+    else if (msg.type == EnumConstants.SPICE_MSG_PORT_EVENT)
     {
         DEBUG > 0 && console.log('SPICE port: Port event received for', this.portName, msg);
         var event = new CustomEvent('spice-port-event', {
@@ -67,7 +67,7 @@ SpicePortConn.prototype.process_channel_message = function(msg)
         window.dispatchEvent(event);
         return true;
     }
-    else if (msg.type == Constants.SPICE_MSG_SPICEVMC_DATA)
+    else if (msg.type == EnumConstants.SPICE_MSG_SPICEVMC_DATA)
     {
         DEBUG > 0 && console.log('SPICE port: Data received in port', this.portName, msg);
         var event = new CustomEvent('spice-port-data', {
